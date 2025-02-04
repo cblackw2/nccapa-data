@@ -1,9 +1,9 @@
 # finalapp.py
 import streamlit as st
 import os
-from modules import data_module, visualization_module, ai_module, ui_module
+from modules import data_module, visualization_module, ai_module, ui_module, chat_module
 
-# Set page configuration
+# Set Streamlit page configuration
 st.set_page_config(page_title="NC/CAPA Insight Reviewer", layout="wide")
 
 # --- Sidebar: Configuration ---
@@ -60,6 +60,28 @@ if st.button("Generate Report"):
             st.write("### Insight Report")
             st.text_area("Report Output", value=report, height=400)
 
+# --- Chat Interface for Further Refinement ---
+st.write("### Chat with Assistant for Further Refinement")
+chat_module.init_chat()  # Initialize the chat history if not present
+
+# Display current conversation history
+if "chat_history" in st.session_state:
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"**User:** {msg['content']}")
+        else:
+            st.markdown(f"**Assistant:** {msg['content']}")
+
+followup = st.text_input("Enter your follow-up question or refinement request:")
+if st.button("Send Follow-up") and followup:
+    with st.spinner("Sending message..."):
+        reply = chat_module.send_chat_message(followup)
+    st.write("### Updated Conversation")
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"**User:** {msg['content']}")
+        else:
+            st.markdown(f"**Assistant:** {msg['content']}")
+
 st.markdown("---")
 st.markdown("Developed by your team. © 2025")
-

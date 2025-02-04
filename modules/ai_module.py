@@ -1,5 +1,14 @@
 # modules/ai_module.py
+import os
+import certifi
 import openai
+import ssl
+
+# Ensure the requests library uses the certifi certificate bundle
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+
+# OPTIONAL: Disable SSL verification (for debugging only, not for production)
+# ssl._create_default_https_context = ssl._create_unverified_context
 
 def initialize_openai(api_key: str):
     """
@@ -11,8 +20,7 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
     """
     Generate an insight report by sending a prompt to the OpenAI ChatCompletion API.
     
-    It aggregates a summary from the provided NC/CAPA data and includes the user's query
-    in a conversation-style prompt.
+    Aggregates a summary from the NC/CAPA data and includes the user's query in a conversation-style prompt.
     """
     total_nc = len(data)
     departments = data["Department"].nunique() if "Department" in data.columns else "N/A"
@@ -25,7 +33,6 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
         f"- Number of open CAPA actions: {open_capa}\n"
     )
 
-    # Construct the conversation messages:
     messages = [
         {
             "role": "system",
@@ -46,14 +53,12 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
     ]
 
     try:
-        # Use the new ChatCompletion.create interface
-        response = openai.Completion.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=messages,
             max_tokens=1024,
             temperature=0.5
         )
-        # Extract the generated text from the response
         report = response.choices[0].message["content"].strip()
         return report
     except Exception as e:

@@ -3,23 +3,18 @@ import streamlit as st
 import os
 from modules import data_module, visualization_module, ai_module, ui_module
 
-# Set Streamlit page configuration
+# Set page configuration
 st.set_page_config(page_title="NC/CAPA Insight Reviewer", layout="wide")
 
 # --- Sidebar: Configuration ---
 st.sidebar.title("Configuration")
 api_key = ui_module.get_api_key()
 if api_key:
-    # Initialize the OpenAI API by setting the API key
     ai_module.initialize_openai(api_key)
 else:
     st.sidebar.warning("API key required to generate insight reports.")
 
-# Sidebar: Select report type
-report_type = st.sidebar.selectbox(
-    "Select Report Type", 
-    ("Summary Report", "Deep Dive Analysis")
-)
+report_type = st.sidebar.selectbox("Select Report Type", ("Summary Report", "Deep Dive Analysis"))
 
 # --- Main UI: Data Upload and Display ---
 st.title("NC/CAPA Data Review")
@@ -29,7 +24,6 @@ uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
 df = None
 if uploaded_file is not None:
     try:
-        # Load data into a pandas DataFrame
         df = data_module.load_data(uploaded_file)
         st.success("Data loaded successfully!")
         st.write("### Data Preview", df.head())
@@ -38,7 +32,7 @@ if uploaded_file is not None:
 else:
     st.info("Please upload a CSV file containing NC/CAPA data.")
 
-# --- Visualization Module ---
+# --- Visualization ---
 if df is not None:
     st.write("### Nonconformance Count by Department")
     try:
@@ -49,9 +43,10 @@ if df is not None:
 
 # --- AI Insight Report Generation ---
 st.write("### Generate Insight Report")
-user_query = st.text_input("Enter your specific question or request for insights:",
-                           placeholder="E.g., 'What are the main trends in the last quarter?'")
-
+user_query = st.text_input(
+    "Enter your specific question or request for insights:",
+    placeholder="E.g., 'What are the main trends in the last quarter?'"
+)
 if st.button("Generate Report"):
     if not api_key:
         st.error("Please enter your OpenAI API key in the sidebar.")
@@ -67,3 +62,4 @@ if st.button("Generate Report"):
 
 st.markdown("---")
 st.markdown("Developed by your team. © 2025")
+

@@ -14,3 +14,4 @@ def department_chart(df: pd.DataFrame):
         return fig
     else:
         raise Exception("Column 'Department' not found in data.")
+

@@ -7,9 +7,6 @@ import ssl
 # Ensure the requests library uses the certifi certificate bundle
 os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
 
-# OPTIONAL: Disable SSL verification (for debugging only, not for production)
-# ssl._create_default_https_context = ssl._create_unverified_context
-
 def initialize_openai(api_key: str):
     """
     Initialize the OpenAI API by setting the API key.
@@ -23,13 +20,13 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
     Aggregates a summary from the NC/CAPA data and includes the user's query in a conversation-style prompt.
     """
     total_nc = len(data)
-    departments = data["Department"].nunique() if "Department" in data.columns else "N/A"
+    Sites = data["Site"].nunique() if "Site" in data.columns else "N/A"
     open_capa = data[data["Status"] == "Open"].shape[0] if "Status" in data.columns else "N/A"
 
     summary = (
         f"NC/CAPA Data Summary:\n"
         f"- Total nonconformance records: {total_nc}\n"
-        f"- Number of departments involved: {departments}\n"
+        f"- Number of Sites involved: {Sites}\n"
         f"- Number of open CAPA actions: {open_capa}\n"
     )
 
@@ -47,6 +44,7 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
             "content": (
                 f"Given the following summary:\n{summary}\n"
                 f"User Query: {user_query}\n"
+                f"Report Type: {report_type}\n"
                 "Generate a detailed report that identifies trends and offers actionable recommendations."
             )
         }
@@ -54,7 +52,7 @@ def generate_insight_report(data, report_type: str, user_query: str) -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=messages,
             max_tokens=1024,
             temperature=0.5

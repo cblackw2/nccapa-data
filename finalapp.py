@@ -17,10 +17,10 @@ else:
 report_type = st.sidebar.selectbox("Select Report Type", ("Summary Report", "Deep Dive Analysis"))
 
 # --- Main UI: Data Upload and Display ---
-st.title("NC/CAPA Data Review")
-st.markdown("Upload your NC/CAPA CSV file for analysis.")
+st.title("NC/CAPA Data Review PoC")
 
-uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+# Adjusted file uploader to accept both CSV and XLSX files
+uploaded_file = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xlsx"])
 df = None
 if uploaded_file is not None:
     try:
@@ -30,13 +30,13 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Error loading data: {e}")
 else:
-    st.info("Please upload a CSV file containing NC/CAPA data.")
+    st.info("Please upload a CSV or Excel file containing NC/CAPA data.")
 
 # --- Visualization ---
 if df is not None:
-    st.write("### Nonconformance Count by Department")
+    st.write("### Nonconformance Count by Site")
     try:
-        fig = visualization_module.department_chart(df)
+        fig = visualization_module.Site_chart(df)
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.error(f"Visualization error: {e}")

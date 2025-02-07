@@ -7,7 +7,7 @@ This application allows quality teams to review NC/CAPA data by uploading CSV fi
 ## Features
 
 - Data ingestion and preview from CSV files.
-- Visualization of nonconformance counts by department.
+- Visualization of nonconformance counts by Site.
 - Integration with OpenAI API to generate detailed insight reports.
 - User-friendly web interface built with Streamlit.
 
